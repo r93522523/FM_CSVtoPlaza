@@ -34,13 +34,12 @@ token = apitoken.text[28:-2]
 head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
 update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
 
-API_KEY = os.environ.get('ELSCommKey')
+#API_KEY = os.environ.get('ELSCommKey')
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    client_key = request.headers.get('ELSCommKey')
-    if client_key != API_KEY:
-        return jsonify({'message': 'Invalid API key'}), 403
-        
+#    client_key = request.headers.get('ELSCommKey')
+#    if client_key != API_KEY:
+#        return jsonify({'message': 'Invalid API key'}), 403       
     if 'file' not in request.files:
         return 'file is not found'
     file = request.files['file']
