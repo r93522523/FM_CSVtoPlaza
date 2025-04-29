@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 
 app = Flask(__name__)
-API_KEY = os.environ.get('ELSCommKey')
 
 BATCH_SIZE = 2
 def csv_to_json(file_path):
@@ -35,17 +34,16 @@ token = apitoken.text[28:-2]
 head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
 update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
 
+API_KEY = os.environ.get('ELSCommKey')
 @app.route('/upload', methods=['POST'])
 def upload_file():
     client_key = request.headers.get('ELSCommKey')
     if client_key != API_KEY:
-        return jsonify({'message': 'Forbidden: Invalid API key'}), 403
-    
+        return jsonify({'message': 'Invalid API key'}), 403
+        
     if 'file' not in request.files:
-        return 'No file part'
+        return 'file is not found'
     file = request.files['file']
-    if file.filename == '':
-        return 'No selected file'
     if file:
         save_path = os.path.join('/mnt/data', file.filename)
         file.save(save_path)
