@@ -40,21 +40,21 @@ def upload_file():
     client_key = request.headers.get('ELSCommKey')
     if client_key != API_KEY:
         return jsonify({'message': 'Forbidden: Invalid API key'}), 403
-    return jsonify({'message': 'Access granted!'})
-
-    if 'file' not in request.files:
-        return 'No file part'
-    file = request.files['file']
-    if file.filename == '':
-        return 'No selected file'
-    if file:
-        save_path = os.path.join('/mnt/data', file.filename)
-        file.save(save_path)
-        results = []
-        for batch in csv_to_json(save_path):
-            response = requests.patch(update_url , json=batch, headers=head)
-            results.append(batch)
-        return jsonify({"status": "success", "results": results})
+    else:
+        return jsonify({'message': 'Access granted!'})
+        if 'file' not in request.files:
+            return 'No file part'
+        file = request.files['file']
+        if file.filename == '':
+            return 'No selected file'
+        if file:
+            save_path = os.path.join('/mnt/data', file.filename)
+            file.save(save_path)
+            results = []
+            for batch in csv_to_json(save_path):
+                response = requests.patch(update_url , json=batch, headers=head)
+                results.append(batch)
+            return jsonify({"status": "success", "results": results})
 
 if __name__ == '__main__':
     app.run(debug=True)
