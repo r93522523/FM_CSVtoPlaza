@@ -49,10 +49,11 @@ def upload_file():
         results = []
         for batch in csv_to_json(save_path):
             response = requests.patch(update_url , json=batch, headers=head)
-            if response.status_code != 200:
-                return jsonify({"status": "fail", "message": response.text}), 500
+#            if response.status_code != 200:
+#                return jsonify({"status": "fail", "message": response.text}), 500
             results.append(batch)
-        return jsonify({"status": "success", "batch_count": len(results)}), 200
+#        return jsonify({"status": "success", "batch_count": len(results)}), 200
+        return jsonify({"status": "success", "result": results})
 
 if __name__ == '__main__':
     app.run(debug=True)
