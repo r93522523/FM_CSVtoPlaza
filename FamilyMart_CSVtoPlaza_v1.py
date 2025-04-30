@@ -5,7 +5,7 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-BATCH_SIZE = 2
+BATCH_SIZE = 10000
 def csv_to_json(file_path):
     with open(file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
