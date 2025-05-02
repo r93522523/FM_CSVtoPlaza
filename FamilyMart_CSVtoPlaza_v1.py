@@ -57,7 +57,7 @@ def upload_file():
                 response = requests.patch(update_url , json=batch, headers=head)
                 results.append(batch)
             os.remove(save_path)
-            return jsonify({"status": "success", "results": f"{len(results)} items are uploaded"})
+            return jsonify({"status": "success", "results": f"{file.filename} is uploaded"})
         else:
             return jsonify({'error': 'No CSV file found'}), 400
         
