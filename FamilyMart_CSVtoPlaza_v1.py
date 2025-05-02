@@ -34,12 +34,8 @@ token = apitoken.text[28:-2]
 head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
 update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
 
-#API_KEY = os.environ.get('ELSCommKey')
 @app.route('/upload', methods=['POST'])
-def upload_file():
-#    client_key = request.headers.get('ELSCommKey')
-#    if client_key != API_KEY:
-#        return jsonify({'message': 'Invalid API key'}), 403       
+def upload_file():  
     if 'file' not in request.files:
         return 'file is not found'
     file = request.files['file']
@@ -49,10 +45,7 @@ def upload_file():
         results = []
         for batch in csv_to_json(save_path):
             response = requests.patch(update_url , json=batch, headers=head)
-#            if response.status_code != 200:
-#                return jsonify({"status": "fail", "message": response.text}), 500
             results.append(batch)
-#        return jsonify({"status": "success", "batch_count": len(results)}), 200
         return jsonify({"status": "success", "result": results})
 
 if __name__ == '__main__':
