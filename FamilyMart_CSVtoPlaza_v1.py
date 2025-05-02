@@ -34,19 +34,35 @@ token = apitoken.text[28:-2]
 head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
 update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
 
-@app.route('/upload', methods=['POST'])
-def upload_file():  
-    if 'file' not in request.files:
-        return 'file is not found'
-    file = request.files['file']
-    if file:
-        save_path = os.path.join('/mnt/data', file.filename)
-        file.save(save_path)
-        results = []
-        for batch in csv_to_json(save_path):
-            response = requests.patch(update_url , json=batch, headers=head)
-            results.append(batch)
-        return jsonify({"status": "success", "result": results})
+@app.route('/upload_toPlaza', methods=['POST'])
+def upload_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'Missing file'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return 'No selected file'
+        if file:
+            save_path = os.path.join(r'/mnt/data', file.filename)
+            file.save(save_path)
+
+            done_folder = os.path.join(r'/mnt/data', 'done')
+            os.makedirs(done_folder, exist_ok=True)
+            done_path = os.path.join(done_folder, file.filename)
+            shutil.copy(save_path, done_path)
+            
+            results = []
+            for batch in csv_to_json(save_path):
+                response = requests.patch(update_url , json=batch, headers=head)
+                results.append(batch)
+            os.remove(save_path)
+            return jsonify({"status": "success", "results": f"{len(results)} items are uploaded"})
+        else:
+            return jsonify({'error': 'No CSV file found'}), 400
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
