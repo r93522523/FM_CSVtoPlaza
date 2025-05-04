@@ -34,6 +34,7 @@ token = apitoken.text[28:-2]
 head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
 update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
 
+ELS_COMM_KEY = "abcde12345"
 @app.route('/upload_toPlaza', methods=['POST'])
 def upload_file():
     try:
@@ -42,24 +43,28 @@ def upload_file():
         
         file = request.files['file']
         if file.filename == '':
-            return 'No selected file'
+            return 'empty file'
         if file:
-            save_path = os.path.join(r'/mnt/data', file.filename)
-            file.save(save_path)
+            auth_key = request.headers.get('ELSCommKey')
+            if auth_key != ELS_COMM_KEY:
+                return jsonify({'error': 'Unauthorized'}), 401
+            else:
+                save_path = os.path.join(r'/mnt/data', file.filename)
+                file.save(save_path)
 
-            done_folder = os.path.join(r'/mnt/data', 'done')
-            os.makedirs(done_folder, exist_ok=True)
-            done_path = os.path.join(done_folder, file.filename)
-            shutil.copy(save_path, done_path)
+                done_folder = os.path.join(r'/mnt/data', 'done')
+                os.makedirs(done_folder, exist_ok=True)
+                done_path = os.path.join(done_folder, file.filename)
+                shutil.copy(save_path, done_path)
             
-            results = []
-            for batch in csv_to_json(save_path):
-                response = requests.patch(update_url , json=batch, headers=head)
-                results.append(batch)
-            os.remove(save_path)
-            return jsonify({"status": "success", "results": f"{file.filename} is uploaded"})
+                results = []
+                for batch in csv_to_json(save_path):
+                    response = requests.patch(update_url , json=batch, headers=head)
+                    results.append(batch)
+                os.remove(save_path)
+                return jsonify({"status": "success", "results": f"{file.filename} is uploaded"})
         else:
-            return jsonify({'error': 'No CSV file found'}), 400
+            return jsonify({'error': 'CSV format is required'}), 400
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
