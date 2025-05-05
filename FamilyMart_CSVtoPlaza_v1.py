@@ -28,12 +28,6 @@ def csv_to_json(file_path):
         if batch:
             yield batch
 
-tokenurl = "https://central-manager.familymart-tw-test.pcm.pricer-plaza.com/api/public/auth/v1/login"
-apitoken = requests.get(tokenurl , auth=('api@familymart.com.tw','Api@familymart2025'))
-token = apitoken.json().get('token')
-head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
-update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
-
 ELS_COMM_KEY = "abcde12345"
 @app.route('/upload_toPlaza', methods=['POST'])
 def upload_file():
@@ -56,6 +50,12 @@ def upload_file():
                 os.makedirs(done_folder, exist_ok=True)
                 done_path = os.path.join(done_folder, file.filename)
                 shutil.copy(save_path, done_path)
+                
+                tokenurl = "https://central-manager.familymart-tw-test.pcm.pricer-plaza.com/api/public/auth/v1/login"
+                apitoken = requests.get(tokenurl , auth=('api@familymart.com.tw','Api@familymart2025'))
+                token = apitoken.json().get('token')
+                head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
+                update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
             
                 results = []
                 for batch in csv_to_json(save_path):
