@@ -30,7 +30,7 @@ def csv_to_json(file_path):
 
 tokenurl = "https://central-manager.familymart-tw-test.pcm.pricer-plaza.com/api/public/auth/v1/login"
 apitoken = requests.get(tokenurl , auth=('api@familymart.com.tw','Api@familymart2025'))
-token = apitoken.text[28:-2]
+token = apitoken.json().get('token')
 head = {"Authorization":"Bearer " + token, "Content-Type":"application/json"}
 update_url = "https://apitest.familymart-tw-test.pcm.pricer-plaza.com/api/public/core/v1/items"
 
